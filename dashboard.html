@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課程滿意度分析儀表板</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- 引入 Inter 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+    </style>
+    <script>
+        // 客製化 Tailwind 色彩主題 (與問卷相同)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'earth-green': {
+                            '50': '#f7fcf5', '100': '#eef9e9', '200': '#dcf2d4',
+                            '300': '#c4e7b6', '400': '#a9d994', '500': '#8cc870',
+                            '600': '#72b056', '700': '#5c9045', '800': '#4a7338',
+                            '900': '#3d5e2e', '950': '#1e3016'
+                        },
+                        'earth-brown': { '500': '#a16207', '700': '#854d0e' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-earth-green-50 min-h-screen antialiased">
+
+    <!-- 標題 -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-2xl font-bold text-earth-green-900">課程滿意度分析儀表板</h1>
+            <p class="text-sm text-gray-600">即時分析 Google Sheet 資料</p>
+        </div>
+    </header>
+
+    <!-- 載入中畫面 -->
+    <div id="loading-spinner" class="flex justify-center items-center min-h-[calc(100vh-80px)]">
+        <svg class="animate-spin h-10 w-10 text-earth-green-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="text-lg text-earth-green-800 ml-4 font-semibold">資料載入中...</p>
+    </div>
+
+    <!-- 儀表板內容 (預設隱藏) -->
+    <main id="dashboard-content" class="container mx-auto max-w-7xl p-4 sm:p-6 lg:px-8 py-8 hidden">
+        
+        <!-- 錯誤訊息 -->
+        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <strong class="font-bold">資料載入失敗！</strong>
+            <span class="block sm:inline" id="error-text"></span>
+        </div>
+
+        <!-- 關鍵指標 (KPIs) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100 flex items-center space-x-4">
+                <div class="bg-earth-green-100 p-3 rounded-full">
+                    <svg class="w-6 h-6 text-earth-green-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">總回饋數</p>
+                    <p id="kpi-total" class="text-3xl font-bold text-earth-green-900">0</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100 flex items-center space-x-4">
+                <div class="bg-earth-green-100 p-3 rounded-full">
+                    <svg class="w-6 h-6 text-earth-green-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.31h5.513c.49 0 .708.656.34.978l-4.47 3.252a.563.563 0 00-.182.635l1.7 5.111a.563.563 0 01-.84.62l-4.47-3.252a.563.563 0 00-.676 0l-4.47 3.252a.563.563 0 01-.84-.62l1.7-5.111a.563.563 0 00-.182-.635l-4.47-3.252a.563.563 0 01.34-.978h5.513a.563.563 0 00.475-.31l2.125-5.111z" /></svg>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">平均整體滿意度 (Q8)</p>
+                    <p id="kpi-avg-satisfaction" class="text-3xl font-bold text-earth-green-900">0.0</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100 flex items-center space-x-4">
+                <div class="bg-earth-green-100 p-3 rounded-full">
+                    <svg class="w-6 h-6 text-earth-green-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.773 4.773zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">最高分項目</p>
+                    <p id="kpi-highest-q" class="text-xl font-bold text-earth-green-900">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圖表區 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6">
+            <!-- 各項滿意度平均 (長條圖) -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">各項滿意度平均 (1-5分)</h2>
+                <div class="h-80">
+                    <canvas id="averageScoresChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 整體滿意度 (Q8) 分佈 (甜甜圈圖) -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">Q8. 整體滿意度分佈</h2>
+                <div class="h-80 w-full flex justify-center">
+                    <canvas id="overallSatisfactionChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 回饋者身分別 (圓餅圖) -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">回饋者身分別</h2>
+                <div class="h-80 w-full flex justify-center">
+                    <canvas id="roleChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 回饋者年資 (圓餅圖) -->
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">回饋者工作年資</h2>
+                <div class="h-80 w-full flex justify-center">
+                    <canvas id="yearsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- 質性回饋 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">Q13. 印象最深刻</h2>
+                <ul id="feedback-q13" class="h-64 overflow-y-auto space-y-3 text-sm pr-2"></ul>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">Q14. 如何應用</h2>
+                <ul id="feedback-q14" class="h-64 overflow-y-auto space-y-3 text-sm pr-2"></ul>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-lg border border-earth-green-100">
+                <h2 class="text-lg font-semibold text-earth-green-800 mb-4">Q15. 改善建議</h2>
+                <ul id="feedback-q15" class="h-64 overflow-y-auto space-y-3 text-sm pr-2"></ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 您的 Web App 網址 (與 survey.html 相同)
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLRs31klosQLXOP9kFqb3Eg7LhuJqXI_egJ7AHQjXDXrfrEuTD6P1YeQ7kNmgW7sgV/exec";
+
+        // 圖表顏色
+        const chartColors = [
+            '#5c9045', // earth-green-700
+            '#a9d994', // earth-green-400
+            '#854d0e', // earth-brown-700
+            '#dcf2d4', // earth-green-200
+            '#f7fcf5'  // earth-green-50
+        ];
+
+        // 監聽 DOM 載入完成事件
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchData();
+        });
+
+        // 獲取並處理資料
+        async function fetchData() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP 錯誤! 狀態: ${response.status}`);
+                }
+                const result = await response.json();
+
+                if (result.result === "error") {
+                    throw new Error(result.message);
+                }
+
+                if (!result.data || result.data.length === 0) {
+                    showError("試算表中目前沒有資料。");
+                    return;
+                }
+
+                // 資料處理
+                processAndRender(result.data);
+
+                // 顯示儀表板
+                document.getElementById('loading-spinner').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('資料獲取失敗:', error);
+                showError(error.message);
+            }
+        }
+        
+        // 顯示錯誤訊息
+        function showError(message) {
+            document.getElementById('loading-spinner').classList.add('hidden');
+            document.getElementById('dashboard-content').classList.remove('hidden');
+            document.getElementById('error-message').classList.remove('hidden');
+            document.getElementById('error-text').textContent = message;
+        }
+
+        // 處理資料並渲染圖表
+        function processAndRender(data) {
+            // --- 1. 計算 KPI ---
+            const totalSubmissions = data.length;
+            document.getElementById('kpi-total').textContent = totalSubmissions;
+
+            const qMap = {
+                q4: "Q4. 講師專業與熱忱", q5: "Q5. 教材與活動",
+                q6: "Q6. 教學清晰", q7: "Q7. 時間與環境",
+                q8: "Q8. 整體滿意度", q9: "Q9. 符合學習需求",
+                q10: "Q10. 達成學習目標", q11: "Q11. 與工作相關",
+                q12: "Q12. 計劃應用"
+            };
+            
+            const questionKeys = Object.values(qMap);
+            const averages = {};
+            let highestAvg = 0;
+            let highestQ = "-";
+            
+            questionKeys.forEach(key => {
+                let sum = 0;
+                let count = 0;
+                data.forEach(row => {
+                    const score = parseInt(row[key], 10);
+                    if (!isNaN(score)) {
+                        sum += score;
+                        count++;
+                    }
+                });
+                const avg = count > 0 ? (sum / count) : 0;
+                averages[key] = avg;
+
+                if (avg > highestAvg) {
+                    highestAvg = avg;
+                    highestQ = key.split('.')[0]; // "Q8. 整體滿意度" -> "Q8"
+                }
+            });
+
+            document.getElementById('kpi-avg-satisfaction').textContent = averages[qMap.q8].toFixed(1);
+            document.getElementById('kpi-highest-q').textContent = `${highestQ} (${highestAvg.toFixed(1)}分)`;
+
+            // --- 2. 渲染圖表 ---
+            renderAverageScoresChart(averages);
+            
+            // --- 3. 統計分佈 ---
+            const roleCounts = countDistribution(data, '身分別');
+            const yearsCounts = countDistribution(data, '工作總年資');
+            const overallSatisfactionCounts = countDistribution(data, qMap.q8, { '5': '5-非常同意', '4': '4-同意', '3': '3-普通', '2': '2-不同意', '1': '1-非常不同意' });
+
+            renderDoughnutChart('overallSatisfactionChart', overallSatisfactionCounts, '整體滿意度');
+            renderDoughnutChart('roleChart', roleCounts, '身分別');
+            renderDoughnutChart('yearsChart', yearsCounts, '工作年資');
+            
+            // --- 4. 渲染質性回饋 ---
+            renderFeedbackList(data, 'Q13. 印象最深刻', 'feedback-q13');
+            renderFeedbackList(data, 'Q14. 如何應用', 'feedback-q14');
+            renderFeedbackList(data, 'Q15. 改善建議', 'feedback-q15');
+        }
+
+        // 輔助函式：計算分佈
+        function countDistribution(data, key, labelMap = null) {
+            const counts = {};
+            data.forEach(row => {
+                let value = row[key];
+                if (value) {
+                    if (labelMap && labelMap[value]) {
+                        value = labelMap[value];
+                    }
+                    counts[value] = (counts[value] || 0) + 1;
+                }
+            });
+            return counts;
+        }
+
+        // 渲染長條圖 (平均分數)
+        function renderAverageScoresChart(averages) {
+            const ctx = document.getElementById('averageScoresChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(averages).map(k => k.substring(0, k.indexOf('.'))), // "Q4", "Q5"...
+                    datasets: [{
+                        label: '平均分數',
+                        data: Object.values(averages),
+                        backgroundColor: '#72b056', // earth-green-600
+                        borderColor: '#5c9045', // earth-green-700
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y', // 變更為水平長條圖
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 5,
+                            grid: {
+                                color: '#eef9e9' // earth-green-100
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${Object.keys(averages)[context.dataIndex]}: ${context.raw.toFixed(2)} 分`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 渲染甜甜圈圖
+        function renderDoughnutChart(canvasId, counts, label) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(counts),
+                    datasets: [{
+                        label: label,
+                        data: Object.values(counts),
+                        backgroundColor: chartColors,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 渲染質性回饋列表
+        function renderFeedbackList(data, key, elementId) {
+            const ul = document.getElementById(elementId);
+            ul.innerHTML = ''; // 清空
+            data.forEach(row => {
+                const feedback = row[key];
+                if (feedback) {
+                    const li = document.createElement('li');
+                    li.className = 'bg-earth-green-50 p-3 rounded-lg border border-earth-green-100 text-gray-800';
+                    li.textContent = feedback;
+                    ul.appendChild(li);
+                }
+            });
+            if (ul.children.length === 0) {
+                ul.innerHTML = '<li class="text-gray-400 italic">目前無回饋</li>';
+            }
+        }
+
+    </script>
+</body>
+</html>
