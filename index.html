@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課程滿意度暨學習回饋問卷</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Inter 字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* 使用 Noto Sans TC 作為中文字體，Inter 作為英數字體 */
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+        }
+    </style>
+    <script>
+        // 客製化 Tailwind 色彩主題以符合「清新大地」風格
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'earth-green': {
+                            '50': '#f7fcf5', // 非常淺的綠
+                            '100': '#eef9e9',
+                            '200': '#dcf2d4',
+                            '300': '#c4e7b6',
+                            '400': '#a9d994',
+                            '500': '#8cc870', // 主色
+                            '600': '#72b056', // 深一點的主色
+                            '700': '#5c9045', // 按鈕
+                            '800': '#4a7338', // 標題
+                            '900': '#3d5e2e', // 最深
+                            '950': '#1e3016'
+                        },
+                        'earth-brown': {
+                            '500': '#a16207', // 點綴的棕色
+                            '700': '#854d0e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-earth-green-50 min-h-screen antialiased">
+
+    <div class="container mx-auto max-w-3xl p-4 py-8 sm:p-12">
+        <!-- 主問卷卡片 -->
+        <div id="survey-card" class="bg-white p-6 sm:p-10 rounded-2xl shadow-xl border border-earth-green-100 transition-all duration-500">
+            
+            <form id="surveyForm">
+                <!-- 標題與引言 -->
+                <header class="text-center sm:text-left mb-10">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-earth-green-900">課程滿意度暨學習回饋問卷</h1>
+                    <p class="text-base text-gray-700 mt-4">
+                        親愛的同仁，您好：<br>
+                        感謝您參與本次由教學部舉辦的課程。為確保未來的課程更貼近同仁的需求並持續提升品質，請您撥冗填寫以下回饋問卷。您的寶貴意見是我們不斷進步的動力！
+                    </p>
+                </header>
+
+                <!-- 第一部分：基本資料 -->
+                <fieldset class="space-y-6">
+                    <legend class="text-xl font-semibold text-earth-green-800 border-b-2 border-earth-green-200 pb-2 mb-6 w-full flex items-center">
+                        <span class="bg-earth-green-800 text-white rounded-full w-6 h-6 text-sm flex items-center justify-center mr-3">1</span>
+                        基本資料
+                    </legend>
+
+                    <!-- 文字輸入欄位 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="employee-id" class="block text-sm font-medium text-gray-700">人事號</label>
+                            <input type="text" name="employee-id" id="employee-id" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm" required>
+                        </div>
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">姓名</label>
+                            <input type="text" name="name" id="name" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="department" class="block text-sm font-medium text-gray-700">您的服務單位/科別</label>
+                        <input type="text" name="department" id="department" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm" required>
+                    </div>
+
+                    <!-- 身分別 (單選) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">您的身分別 <span class="text-red-600">*</span></label>
+                        <div class="mt-2 space-y-2 sm:space-y-0 sm:flex sm:flex-wrap sm:gap-x-6">
+                            <div class="flex items-center">
+                                <input id="role-physician" name="role" type="radio" value="physician" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" required>
+                                <label for="role-physician" class="ml-2 block text-sm text-gray-700">醫師</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="role-nurse" name="role" type="radio" value="nurse" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600">
+                                <label for="role-nurse" class="ml-2 block text-sm text-gray-700">醫護人員 (含護理師、專科護理師等)</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="role-tech" name="role" type="radio" value="tech" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600">
+                                <label for="role-tech" class="ml-2 block text-sm text-gray-700">醫技人員 (含藥/檢/放/復健/營養等)</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="role-admin" name="role" type="radio" value="admin" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600">
+                                <label for="role-admin" class="ml-2 block text-sm text-gray-700">行政人員</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="role-other" name="role" type="radio" value="other" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600">
+                                <label for="role-other" class="ml-2 block text-sm text-gray-700">其他：</label>
+                                <input type="text" name="role-other-text" class="ml-2 flex-1 w-auto rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 工作總年資 (單選) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">您的工作總年資 <span class="text-red-600">*</span></label>
+                        <div class="mt-2 space-y-2 sm:space-y-0 sm:flex sm:gap-x-6">
+                            <div class="flex items-center">
+                                <input id="years-0-3" name="years" type="radio" value="0-3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" required>
+                                <label for="years-0-3" class="ml-2 block text-sm text-gray-700">0-3 年</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="years-4-10" name="years" type="radio" value="4-10" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600">
+                                <label for="years-4-10" class="ml-2 block text-sm text-gray-700">4-10 年</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="years-11" name="years" type="radio" value="11+" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600">
+                                <label for="years-11" class="ml-2 block text-sm text-gray-700">11 年（含）以上</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- 評分表格 (共用樣式) -->
+                <style>
+                    .rating-table th {
+                        text-align: center;
+                        padding: 0.75rem 0.5rem;
+                        font-weight: 600;
+                        font-size: 0.875rem;
+                        color: #3d5e2e; /* earth-green-900 */
+                        white-space: nowrap;
+                    }
+                    .rating-table td {
+                        padding: 1rem 0.5rem;
+                        text-align: center;
+                    }
+                    .rating-table tbody tr:hover {
+                        background-color: #f7fcf5; /* earth-green-50 */
+                    }
+                    .rating-table .question-cell {
+                        text-align: left;
+                        padding-left: 1rem;
+                        padding-right: 1rem;
+                        color: #1f2937; /* gray-800 */
+                        font-weight: 500;
+                    }
+                </style>
+
+                <!-- 第二部分：課程滿意度 -->
+                <fieldset class="mt-12">
+                    <legend class="text-xl font-semibold text-earth-green-800 border-b-2 border-earth-green-200 pb-2 mb-4 w-full flex items-center">
+                        <span class="bg-earth-green-800 text-white rounded-full w-6 h-6 text-sm flex items-center justify-center mr-3">2</span>
+                        課程滿意度 (必填)
+                    </legend>
+                    <p class="text-sm text-gray-600 mb-6">
+                        請針對本次課程的「講師」與「安排」給予整體評分。<br>
+                        (5=非常同意, 4=同意, 3=普通, 2=不同意, 1=非常不同意)
+                    </p>
+                    
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table class="min-w-full rating-table">
+                            <thead class="bg-earth-green-100">
+                                <tr>
+                                    <th class="question-cell">題項</th>
+                                    <th>非常同意<br>(5)</th>
+                                    <th>同意<br>(4)</th>
+                                    <th>普通<br>(3)</th>
+                                    <th>不同意<br>(2)</th>
+                                    <th>非常不同意<br>(1)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Q4 -->
+                                <tr>
+                                    <td class="question-cell">4. 講師具備豐富的專業知識與教學熱忱。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q4" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q4 非常同意" required></td>
+                                    <td><input type="radio" name="q4" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q4 同意"></td>
+                                    <td><input type="radio" name="q4" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q4 普通"></td>
+                                    <td><input type="radio" name="q4" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q4 不同意"></td>
+                                    <td><input type="radio" name="q4" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q4 非常不同意"></td>
+                                </tr>
+                                <!-- Q5 -->
+                                <tr>
+                                    <td class="question-cell">5. 課程教材內容與活動安排準備充分。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q5" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q5 非常同意" required></td>
+                                    <td><input type="radio" name="q5" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q5 同意"></td>
+                                    <td><input type="radio" name="q5" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q5 普通"></td>
+                                    <td><input type="radio" name="q5" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q5 不同意"></td>
+                                    <td><input type="radio" name="q5" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q5 非常不同意"></td>
+                                </tr>
+                                <!-- Q6 -->
+                                <tr>
+                                    <td class="question-cell">6. 課程教學清晰有條理，能掌握重點。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q6" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q6 非常同意" required></td>
+                                    <td><input type="radio" name="q6" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q6 同意"></td>
+                                    <td><input type="radio" name="q6" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q6 普通"></td>
+                                    <td><input type="radio" name="q6" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q6 不同意"></td>
+                                    <td><input type="radio" name="q6" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q6 非常不同意"></td>
+                                </tr>
+                                <!-- Q7 -->
+                                <tr>
+                                    <td class="question-cell">7. 課程時間與環境(含硬體設備)安排適當。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q7" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q7 非常同意" required></td>
+                                    <td><input type="radio" name="q7" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q7 同意"></td>
+                                    <td><input type="radio" name="q7" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q7 普通"></td>
+                                    <td><input type="radio" name="q7" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q7 不同意"></td>
+                                    <td><input type="radio" name="q7" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q7 非常不同意"></td>
+                                </tr>
+                                <!-- Q8 -->
+                                <tr>
+                                    <td class="question-cell">8. 整體而言，我對本次課程感到滿意。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q8" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q8 非常同意" required></td>
+                                    <td><input type="radio" name="q8" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q8 同意"></td>
+                                    <td><input type="radio" name="q8" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q8 普通"></td>
+                                    <td><input type="radio" name="q8" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q8 不同意"></td>
+                                    <td><input type="radio" name="q8" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q8 非常不同意"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+
+                <!-- 第三部分：學習與應用 -->
+                <fieldset class="mt-12">
+                    <legend class="text-xl font-semibold text-earth-green-800 border-b-2 border-earth-green-200 pb-2 mb-4 w-full flex items-center">
+                        <span class="bg-earth-green-800 text-white rounded-full w-6 h-6 text-sm flex items-center justify-center mr-3">3</span>
+                        學習與應用 (必填)
+                    </legend>
+                    <p class="text-sm text-gray-600 mb-6">
+                        請評估您在「學習成效」與「未來應用」方面的看法。<br>
+                        (5=非常同意, 4=同意, 3=普通, 2=不同意, 1=非常不同意)
+                    </p>
+
+                    <div class="overflow-x-auto rounded-lg border border-gray-200">
+                        <table class="min-w-full rating-table">
+                            <thead class="bg-earth-green-100">
+                                <tr>
+                                    <th class="question-cell">題項</th>
+                                    <th>非常同意<br>(5)</th>
+                                    <th>同意<br>(4)</th>
+                                    <th>普通<br>(3)</th>
+                                    <th>不同意<br>(2)</th>
+                                    <th>非常不同意<br>(1)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <!-- Q9 -->
+                                <tr>
+                                    <td class="question-cell">9. 課程內容符合我個人的學習需求。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q9" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q9 非常同意" required></td>
+                                    <td><input type="radio" name="q9" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q9 同意"></td>
+                                    <td><input type="radio" name="q9" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q9 普通"></td>
+                                    <td><input type="radio" name="q9" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q9 不同意"></td>
+                                    <td><input type="radio" name="q9" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q9 非常不同意"></td>
+                                </tr>
+                                <!-- Q10 -->
+                                <tr>
+                                    <td class="question-cell">10. 我認為我已達成本課程設定的學習目標。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q10" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q10 非常同意" required></td>
+                                    <td><input type="radio" name="q10" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q10 同意"></td>
+                                    <td><input type="radio" name="q10" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q10 普通"></td>
+                                    <td><input type="radio" name="q10" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q10 不同意"></td>
+                                    <td><input type="radio" name="q10" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q10 非常不同意"></td>
+                                </tr>
+                                <!-- Q11 -->
+                                <tr>
+                                    <td class="question-cell">11. 本課程的內容與我的工作實務相關。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q11" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q11 非常同意" required></td>
+                                    <td><input type="radio" name="q11" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q11 同意"></td>
+                                    <td><input type="radio" name="q11" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q11 普通"></td>
+                                    <td><input type="radio" name="q11" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q11 不同意"></td>
+                                    <td><input type="radio" name="q11" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q11 非常不同意"></td>
+                                </tr>
+                                <!-- Q12 -->
+                                <tr>
+                                    <td class="question-cell">12. 我計劃將本次課程所學，應用於我的日常工作中。 <span class="text-red-600">*</span></td>
+                                    <td><input type="radio" name="q12" value="5" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q12 非常同意" required></td>
+                                    <td><input type="radio" name="q12" value="4" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q12 同意"></td>
+                                    <td><input type="radio" name="q12" value="3" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q12 普通"></td>
+                                    <td><input type="radio" name="q12" value="2" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q12 不同意"></td>
+                                    <td><input type="radio" name="q12" value="1" class="h-4 w-4 text-earth-green-700 border-gray-300 focus:ring-earth-green-600" aria-label="Q12 非常不同意"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </fieldset>
+
+                <!-- 第四部分：質性回饋 -->
+                <fieldset class="mt-12 space-y-6">
+                    <legend class="text-xl font-semibold text-earth-green-800 border-b-2 border-earth-green-200 pb-2 mb-4 w-full flex items-center">
+                        <span class="bg-earth-green-800 text-white rounded-full w-6 h-6 text-sm flex items-center justify-center mr-3">4</span>
+                        質性回饋 (必填)
+                    </legend>
+                    
+                    <div>
+                        <label for="q13" class="block text-sm font-medium text-gray-700">
+                            13. 本次課程中，讓您印象最深刻或最有啟發的一個觀點或技巧是什麼？ <span class="text-red-600">*</span>
+                        </label>
+                        <textarea id="q13" name="q13" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm" required></textarea>
+                    </div>
+                    <div>
+                        <label for="q14" class="block text-sm font-medium text-gray-700">
+                            14. 承上題，您具體打算如何將所學應用在工作上？ <span class="text-red-600">*</span>
+                        </label>
+                        <textarea id="q14" name="q14" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm" required></textarea>
+                    </div>
+                    <div>
+                        <label for="q15" class="block text-sm font-medium text-gray-700">
+                            15. 對於本課程（例如：內容深度、教學方式、時間安排等），您有何具體的改善建議？ <span class="text-red-600">*</span>
+                        </label>
+                        <textarea id="q15" name="q15" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-earth-green-500 focus:ring-earth-green-500 sm:text-sm" required></textarea>
+                    </div>
+                </fieldset>
+
+                <!-- 提交按鈕 -->
+                <div class="mt-12 text-center">
+                    <button type="submit" class="inline-flex justify-center items-center px-10 py-3 text-base font-semibold text-white bg-earth-green-700 rounded-lg shadow-lg hover:bg-earth-green-800 focus:outline-none focus:ring-2 focus:ring-earth-green-500 focus:ring-offset-2 transition-all duration-200 ease-in-out transform hover:-translate-y-0.5">
+                        提交問卷
+                    </button>
+                </div>
+            </form>
+
+            <!-- 頁尾 -->
+            <footer class="mt-12 text-center text-xs text-gray-500 border-t border-gray-200 pt-6">
+                <p>主辦單位：教學部</p>
+                <p>聯絡人：林淑雅 (分機57438；信箱cmh90022@mail.chimei.org.tw)</p>
+            </footer>
+
+        </div>
+        
+        <!-- 提交後的感謝訊息 (預設隱藏) -->
+        <div id="thank-you-message" class="hidden bg-white p-10 sm:p-20 rounded-2xl shadow-xl border border-earth-green-100 text-center transition-all duration-500 opacity-0 -translate-y-4">
+            <svg class="w-16 h-16 text-earth-green-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            <h2 class="text-3xl font-bold text-earth-green-900 mt-6">感謝您的填寫！</h2>
+            <p class="text-lg text-gray-700 mt-4">您的寶貴意見是我們不斷進步的動力！</p>
+        </div>
+
+    </div>
+
+    <script>
+        // 您的 Web App 網址
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLRs31klosQLXOP9kFqb3Eg7LhuJqXI_egJ7AHQjXDXrfrEuTD6P1YeQ7kNmgW7sgV/exec";
+
+        const form = document.getElementById('surveyForm');
+        const surveyCard = document.getElementById('survey-card');
+        const thankYouMessage = document.getElementById('thank-you-message');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // 防止表單的預設提交行為
+
+            const submitButton = form.querySelector('button[type="submit"]');
+            
+            // 1. 顯示載入中並禁用按鈕
+            submitButton.disabled = true;
+            submitButton.innerHTML = `
+                <svg class="animate-spin h-5 w-5 mr-3 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                提交中...`;
+
+            // 2. 將表單資料轉換為 JSON 物件
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            // 3. 使用 fetch 發送資料
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                redirect: 'follow',
+                // Google Apps Script 接收 JSON 時，Content-Type 需設為 text/plain
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json()) // 解析 GAS 返回的 JSON
+            .then(data => {
+                if (data.result === "success") {
+                    // 4. 提交成功，顯示感謝畫面
+                    surveyCard.classList.add('opacity-0', '-translate-y-4');
+                    setTimeout(() => {
+                        surveyCard.classList.add('hidden');
+                        thankYouMessage.classList.remove('hidden');
+                        setTimeout(() => {
+                            thankYouMessage.classList.remove('opacity-0', '-translate-y-4');
+                        }, 10);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 500);
+                } else {
+                    // 5. 提交失敗 (Apps Script 內部錯誤)
+                    throw new Error(data.message || 'Apps Script 處理時發生錯誤。');
+                }
+            })
+            .catch(error => {
+                // 5. 提交失敗 (網路錯誤或 JSON 解析失敗)
+                console.error('提交失敗:', error);
+                submitButton.disabled = false;
+                submitButton.innerHTML = '提交問卷';
+
+                // 在按鈕上方顯示錯誤訊息
+                let errorBox = document.getElementById('error-message');
+                if (!errorBox) {
+                    errorBox = document.createElement('div');
+                    errorBox.id = 'error-message';
+                    errorBox.className = 'mt-4 text-center text-red-600 font-semibold';
+                    // 插入到按鈕的父元素 (div) 之前
+                    submitButton.parentElement.before(errorBox);
+                }
+                errorBox.textContent = '發生網路錯誤，請稍後再試：' + error.message;
+            });
+        });
+    </script>
+
+</body>
+</html>
